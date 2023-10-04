@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.8)
+project(software-rasterizer)
+
+add_executable(rasterizer
+	src/main.cpp
+	
+	src/utils/tgaimage.cpp
+	src/utils/model.cpp
+	src/utils/geometry.h "src/rendering/buffer.h" "src/rendering/buffer.cpp")
+
+
+target_include_directories(rasterizer PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/src)
+
