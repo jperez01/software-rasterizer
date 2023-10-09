@@ -13,6 +13,7 @@ public:
 	}
 
 	void set(int x, int y, float value);
+    void clear();
 
 private:
 	int m_width, m_height;

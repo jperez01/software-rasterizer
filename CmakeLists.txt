@@ -1,14 +1,28 @@
 cmake_minimum_required(VERSION 3.8)
 project(software-rasterizer)
 
+add_subdirectory(third-party)
+
 add_executable(rasterizer
 	src/main.cpp
-	
 	src/utils/tgaimage.cpp
 	src/utils/model.cpp
-	src/utils/geometry.h "src/rendering/buffer.h" "src/rendering/buffer.cpp")
+	src/utils/geometry.h
+	"src/rendering/buffer.h"
+	"src/rendering/buffer.cpp"
+	src/utils/screen.cpp
+	src/utils/screen.h
+	src/utils/geometry.cpp
+	src/rendering/texture.cpp
+	src/rendering/texture.h
+		src/utils/common.cpp
+		src/utils/common.h)
 
+find_package(SDL2 REQUIRED COMPONENTS SDL2)
+target_link_libraries(rasterizer PRIVATE SDL2::SDL2 glm stb_image)
 
 target_include_directories(rasterizer PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR}/src)
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+target_compile_features(rasterizer PRIVATE cxx_std_17)

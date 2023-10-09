@@ -1,7 +1,9 @@
-#ifndef __GEOMETRY_H__
-#define __GEOMETRY_H__
+#pragma once
 
 #include <cmath>
+#include <iostream>
+
+#include <glm/glm.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,4 +54,6 @@ template <class t> std::ostream& operator<<(std::ostream& s, Vec3<t>& v) {
 	return s;
 }
 
-#endif //__GEOMETRY_H__
+glm::ivec2 convertToScreenCoords(int width, int height, glm::vec3 worldCoords);
+
+glm::vec3 barycentricCoords(std::vector<glm::ivec2>& points, glm::ivec2& currentPoint);
