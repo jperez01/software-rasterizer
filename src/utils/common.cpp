@@ -6,21 +6,11 @@
 #include <iostream>
 
 Color::Color(unsigned char R, unsigned char G, unsigned char B, unsigned char A) :
-        r(R), g(G), b(B), a(A), bytespp(Format::RGBA) {
-    val = new unsigned char[4];
-    val[0] = r;
-    val[1] = g;
-    val[2] = b;
-    val[3] = a;
-}
+        r(R), g(G), b(B), a(A), bytespp(Format::RGBA) { }
 
-Color::Color(Color &color) : r(color.r), g(color.g), b(color.b), a(color.a), val(color.val), bytespp(color.bytespp) {}
+Color::Color(Color &color) : r(color.r), g(color.g), b(color.b), a(color.a), bytespp(color.bytespp) {}
 
-Color::~Color() {
-    delete val;
-}
-
-Color::Color(unsigned char *data, int bpp) : val(data), bytespp(bpp) {}
+Color::~Color() {}
 
 unsigned int toUInt(const std::string& str) {
     char* end_ptr = nullptr;

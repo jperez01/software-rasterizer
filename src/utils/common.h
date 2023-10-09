@@ -12,12 +12,10 @@ enum Format {
 
 struct Color {
     unsigned char r, g, b, a;
-    unsigned char* val;
     int bytespp;
 
     Color(unsigned char R, unsigned char G, unsigned char B, unsigned char A);
     Color(Color& color);
-    Color(unsigned char* data, int bpp);
 
     ~Color();
 };
