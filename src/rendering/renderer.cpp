@@ -68,5 +68,5 @@ void Renderer::triangle(std::vector<glm::vec3> worldCoords, const Color& color) 
 }
 
 void Renderer::cleanUp() {
-
+    m_screen.cleanUp();
 }

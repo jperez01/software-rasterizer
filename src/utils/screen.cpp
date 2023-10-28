@@ -42,3 +42,9 @@ void Screen::updateFrame(void* data) {
     SDL_RenderCopyEx(m_renderer, m_windowTexture, nullptr, nullptr, 0, nullptr, SDL_FLIP_VERTICAL);
     SDL_RenderPresent(m_renderer);
 }
+
+void Screen::cleanUp() {
+    SDL_DestroyTexture(m_windowTexture);
+    SDL_DestroyRenderer(m_renderer);
+    SDL_DestroyWindow(m_window);
+}

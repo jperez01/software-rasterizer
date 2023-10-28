@@ -17,3 +17,19 @@ glm::vec3 barycentricCoords(std::vector<glm::ivec2>& points, glm::ivec2& current
 
     return glm::vec3(1.0f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
 }
+
+glm::mat4 lookAtMatrix(const glm::vec3& from, const glm::vec3& to, const glm::vec3& up) {
+    glm::vec3 forward = glm::normalize(from - to);
+
+    glm::vec3 arbitraryVector = glm::vec3(0, 1, 0);
+    glm::vec3 right = glm::cross(arbitraryVector, forward);
+    right = glm::normalize(right);
+
+    glm::vec3 newUp = glm::cross(forward, right);
+
+
+    return glm::mat4(right.x, newUp.y, forward.z, from.x,
+                     right.x, newUp.y, forward.z, from.y,
+                     right.x, newUp.y, forward.z, from.z,
+                     0, 0, 0, 1);
+}

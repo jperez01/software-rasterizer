@@ -12,6 +12,8 @@ public:
 
     void handleEvent();
     void updateFrame(void* data);
+    void cleanUp();
+
     bool isOpen() { return m_isOpen; }
 
 private:
