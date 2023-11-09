@@ -57,3 +57,5 @@ template <class t> std::ostream& operator<<(std::ostream& s, Vec3<t>& v) {
 glm::ivec2 convertToScreenCoords(int width, int height, glm::vec3 worldCoords);
 
 glm::vec3 barycentricCoords(std::vector<glm::ivec2>& points, glm::ivec2& currentPoint);
+
+glm::mat4 lookAtMatrix(const glm::vec3& from, const glm::vec3& to, const glm::vec3& up);

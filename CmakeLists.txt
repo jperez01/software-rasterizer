@@ -10,8 +10,8 @@ add_executable(rasterizer
 	src/utils/geometry.h
 	"src/rendering/buffer.h"
 	"src/rendering/buffer.cpp"
-	src/utils/screen.cpp
-	src/utils/screen.h
+		src/core/application.cpp
+		src/core/application.h
 	src/utils/geometry.cpp
 	src/rendering/texture.cpp
 	src/rendering/texture.h
@@ -20,7 +20,13 @@ add_executable(rasterizer
         src/rendering/framebuffer.cpp
         src/rendering/framebuffer.h
 		src/rendering/renderer.cpp
-		src/rendering/renderer.h)
+		src/rendering/renderer.h
+        src/utils/camera.cpp
+        src/utils/camera.h
+        src/shaders/shader.cpp
+        src/shaders/shader.h
+		src/shaders/simpleShader.h
+)
 
 find_package(SDL2 REQUIRED COMPONENTS SDL2)
 target_link_libraries(rasterizer PRIVATE SDL2::SDL2 glm stb_image)
