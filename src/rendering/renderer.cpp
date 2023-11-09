@@ -3,38 +3,49 @@
 //
 
 #include "renderer.h"
+#include <glm/gtx/string_cast.hpp>
 
-Renderer::Renderer(int width, int height) : m_screen(width, height), m_framebuffer(width, height),
-m_model("../resources/african_head.obj"), m_albedo("../resources/african_head_diffuse.tga") {
+Renderer::Renderer(int width, int height, Camera& camera) : m_camera(camera), m_framebuffer(width, height),
+    m_model("../resources/african_head.obj"), m_albedo("../resources/african_head_diffuse.tga") {
+    m_program.onFragment(fragFunction);
+    m_program.onVertex(vertFunction);
 }
 
 void Renderer::handleRendering() {
-    while (m_screen.isOpen()) {
-        m_screen.handleEvent();
+    m_framebuffer.clear();
+    glm::mat4 viewMatrix = m_camera.getViewMatrix();
 
-        m_framebuffer.clear();
+    Uniforms uniforms{};
+    uniforms.albedo = &m_albedo;
+    uniforms.view = viewMatrix;
+    uniforms.model = glm::mat4(1.0f);
+    uniforms.proj = glm::mat4(1.0f);
 
-        for (int i = 0; i < m_model.nfaces() / 3; i++) {
-            std::vector<glm::vec3> worldCoords;
-            worldCoords.resize(3);
-            for (int j = 0; j < 3; j++) {
-                uint32_t face = m_model.face(i * 3 + j);
-                worldCoords[j] = m_model.vert(face);
-            }
+    m_program.setUniforms(uniforms);
 
-            glm::vec2 texCoords = m_model.texCoords(m_model.face(i * 3));
-            Color someColor = m_albedo.getDataAt(texCoords);
-            triangle(worldCoords, someColor);
+    for (int i = 0; i < m_model.nfaces() / 3; i++) {
+        std::vector<Varying> vertOutputs(3);
+        for (int j = 0; j < 3; j++) {
+            uint32_t face = m_model.face(i * 3 + j);
+
+            Inputs inputs{};
+            inputs.texCoords = m_model.texCoords(face);
+            inputs.normal = glm::vec3(1.0f);
+            inputs.pos = m_model.vert(face);
+
+            Varying output{};
+            m_program.doVertexShader(inputs, output);
+
+            vertOutputs[j] = output;
         }
-
-        m_screen.updateFrame(m_framebuffer.getColorBuffer());
+        triangle(vertOutputs);
     }
 }
 
-void Renderer::triangle(std::vector<glm::vec3> worldCoords, const Color& color) {
+void Renderer::triangle(std::vector<Varying> vertOutputs) {
     std::vector<glm::ivec2> points(3);
     for (int i = 0; i < 3; i++)
-        points[i] = convertToScreenCoords(m_framebuffer.getWidth(), m_framebuffer.getHeight(), worldCoords[i]);
+        points[i] = convertToScreenCoords(m_framebuffer.getWidth(), m_framebuffer.getHeight(), vertOutputs[i].position);
 
     glm::ivec2 bboxmin(m_framebuffer.getWidth() - 1, m_framebuffer.getHeight() - 1);
     glm::ivec2 bboxmax(0, 0);
@@ -54,19 +65,20 @@ void Renderer::triangle(std::vector<glm::vec3> worldCoords, const Color& color) 
             glm::vec3 baryCoords = barycentricCoords(points, P);
             if (baryCoords.x < 0 || baryCoords.y < 0 || baryCoords.z < 0) continue;
 
-            float interpolatedZ = baryCoords.x * worldCoords[0].z + baryCoords.y * worldCoords[1].z +
-                                  baryCoords.z * worldCoords[2].z;
+            float interpolatedZ = baryCoords.x * vertOutputs[0].position.z + baryCoords.y * vertOutputs[1].position.z +
+                                  baryCoords.z * vertOutputs[2].position.z;
 
             if (interpolatedZ <= m_framebuffer.zValueAt(P.x, P.y)) {
                 continue;
             }
 
+            Varying interpolatedValues{};
+            interpolatedValues.texCoords = baryCoords.x * vertOutputs[0].texCoords + baryCoords.y * vertOutputs[1].texCoords +
+                                           baryCoords.z * vertOutputs[2].texCoords;
+            Color foundColor = m_program.doFragmentShader(interpolatedValues);
+
             m_framebuffer.setZValue(P.x, P.y, interpolatedZ);
-            m_framebuffer.setColorValue(P.x, P.y, color);
+            m_framebuffer.setColorValue(P.x, P.y, foundColor);
         }
     }
-}
-
-void Renderer::cleanUp() {
-    m_screen.cleanUp();
 }

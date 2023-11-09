@@ -5,22 +5,27 @@
 #pragma once
 
 #include "framebuffer.h"
-#include "utils/screen.h"
 #include "utils/model.h"
 #include "texture.h"
+#include "utils/camera.h"
+#include "shaders/simpleShader.h"
 
 class Renderer {
 public:
-    Renderer(int width, int height);
+    Renderer(int width, int height, Camera& camera);
 
-    void cleanUp();
     void handleRendering();
-    void triangle(std::vector<glm::vec3> worldCoords, const Color& color);
+    void triangle(std::vector<Varying> vertOutputs);
+
+    void* getFramebufferData() { return m_framebuffer.getColorBuffer(); }
+
 private:
     Framebuffer m_framebuffer;
-    Screen m_screen;
+    Camera& m_camera;
 
     Model m_model;
     Texture m_albedo;
+
+    Program<Inputs, Varying, Uniforms> m_program;
 };
 
